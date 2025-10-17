@@ -1,0 +1,63 @@
+{
+  "id": "/filmoteka/",
+  "background_color": "#0F0F0F",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Фильмотека",
+  "orientation": "portrait",
+  "scope": "/filmoteka/",
+  "short_name": "Фильмотека",
+  "description": "Фильмотека — веб-приложение для удобного просмотра видеоконтента. Поиск, рекомендации и подбор похожих фильмов реализованы через API КиноПоиска. Для просмотра используется агрегатор видеосервисов с синхронизацией по базе КиноПоиска.",
+  "start_url": "/filmoteka/index.html",
+  "theme_color": "#0F0F0F",
+  "icons": [
+    {
+      "src": "favicon/favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon/favicon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon/favicon-256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://via.placeholder.com/1280x720/000000/ff6000?text=Filmoteka",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://via.placeholder.com/720x1280/000000/ff6000?text=Filmoteka",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "lang": "ru"
+
+}
