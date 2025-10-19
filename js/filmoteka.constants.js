@@ -15,6 +15,14 @@ const API_ENDPOINTS = {
     DETAILS: filmId => `https://kinopoiskapiunofficial.tech/api/v2.2/films/${filmId}`
 };
 
+const ROUTES = {
+    HOME: '/',
+    SEARCH: '/search',
+    MOVIE: '/movie',
+    HISTORY: '/history',
+    SIMILAR: '/similar'
+};
+
 const CONFIG = {
     HISTORY: {
         STORAGE_KEY: 'filmoteka_history',
@@ -48,10 +56,10 @@ const TEXTS = {
     },
     NAV: {
         RECOMMENDATIONS_TITLE: 'Рекомендации',
-        RECOMMENDATIONS_SUBTITLE: 'Лучшие фильмы и сериалы всех времен по версии пользователей КиноПоиска',
+        RECOMMENDATIONS_SUBTITLE: 'Лучшие фильмы и сериалы всех времен',
         SEARCH_RESULTS_TITLE: 'Результаты поиска',
         SEARCH_RESULTS_SUBTITLE: q => `По запросу: "${q}"`,
-        SIMILAR_TITLE: t => `${t}<br><span class="similar-title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5"/></svg></span> похожие фильмы`,
+        SIMILAR_TITLE: t => `${t}<br><span class="similar-title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5"/></svg></span> похожие фильмы`,
         SIMILAR_SUBTITLE: '',
         HISTORY_TITLE: 'История просмотров',
         HISTORY_SUBTITLE: 'Фильмы и сериалы, которые вы смотрели'
@@ -85,4 +93,4 @@ const DEBUG_BASE = {
     type: 'FILM'
 };
 
-export { USE_DEBUG_DATA, IFRAME_SRC, API_KEYS, TEXTS, DEBUG_BASE, API_ENDPOINTS, CONFIG };
+export { USE_DEBUG_DATA, IFRAME_SRC, API_KEYS, TEXTS, DEBUG_BASE, API_ENDPOINTS, CONFIG, ROUTES };
