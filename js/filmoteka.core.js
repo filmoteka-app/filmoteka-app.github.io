@@ -15,7 +15,7 @@ class Filmoteka {
         this.isHistoryView = false;
         this.isWatching = false;
         
-        this.ui.showPagination(false);
+        this.ui.showPagination(true);
         this.bindEventHandlers();
         this.initRouter();
     }
@@ -297,7 +297,7 @@ class Filmoteka {
         );
         this.ui.showHistoryButton(true);
         
-        this.ui.showPagination(false);
+        // this.ui.showPagination(false);
         
         if (USE_DEBUG_DATA) {
             const films = this.api.getDebugMovies('Рекомендации', 20, 200000);
@@ -423,6 +423,8 @@ class Filmoteka {
         this.ui.showHistoryButton(true);
         
         this.updateRoute(ROUTES.HOME);
+
+        this.ui.showPagination(true);
         
         this.loadRecommendations();
     }

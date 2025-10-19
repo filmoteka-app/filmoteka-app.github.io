@@ -12,6 +12,7 @@ class FilmotekaUI {
 
     initializeElements() {
         this.appTitle = this.queryElement('#appTitle');
+        this.appSubtitle = this.queryElement('#appSubtitle');
         this.searchInput = this.queryElement('#searchInput');
         this.searchBtn = this.queryElement('#searchBtn');
         this.navigationTitle = this.queryElement('#navigationTitle');
@@ -65,6 +66,7 @@ class FilmotekaUI {
         const t = TEXTS.APP;
         if (t?.TITLE) document.title = t.TITLE;
         if (this.appTitle) this.appTitle.textContent = t.TITLE;
+        if (this.appSubtitle) this.appSubtitle.textContent = t.SUBTITLE;
         if (this.searchInput) this.searchInput.placeholder = t.PLACEHOLDER;
         
         // Для кнопок с иконками добавляем текст рядом с SVG, а не заменяем содержимое
