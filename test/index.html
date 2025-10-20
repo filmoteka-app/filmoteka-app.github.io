@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title></title>
+
+  <meta name="theme-color" content="#0F0F0F">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/favicon-180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="favicon/favicon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="favicon/favicon-512.png">
+  <link rel="manifest" href="manifest.json">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="header__container">
+        <h1 class="header__title" id="appTitle"></h1>
+        <div class="header__subtitle" id="appSubtitle"></div>
+        <div class="header__search">
+          <input type="text" id="searchInput" class="header__input">
+          <button id="searchBtn" class="btn btn--primary header__btn">
+            <svg class="btn__icon" width="12" height="12" viewBox="0 0 512 512" fill="currentColor">
+              <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="divider"></div>
+
+    <section class="navigation">
+      <div class="navigation__container">
+        <div class="navigation__content">
+          <h2 class="navigation__title" id="navigationTitle"></h2>
+          <div class="navigation__subtitle" id="navigationSubtitle"></div>
+        </div>
+        <div class="navigation__controls">
+          <button id="backBtn" class="btn btn--pagination navigation__back hidden">
+            <svg width="14" height="14" viewBox="0 0 512 512" fill="currentColor">
+              <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256 246.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"/>
+            </svg>
+          </button>
+          <div class="pagination">
+            <button id="prevPage" class="btn btn--pagination pagination__btn">
+              <svg width="16" height="16" viewBox="0 0 512 512" fill="currentColor">
+                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 480 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-370.7 0 105.4-105.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
+              </svg>
+            </button>
+            <span class="pagination__info" id="paginationInfo"></span>
+            <button id="nextPage" class="btn btn--pagination pagination__btn">
+              <svg width="16" height="16" viewBox="0 0 512 512" fill="currentColor">
+                <path d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-105.4 105.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/>
+              </svg>
+            </button>
+          </div>
+          <button id="historyBtn" class="btn btn--pagination navigation__history">
+            <svg width="14" height="14" viewBox="0 0 576 512" fill="currentColor">
+              <path d="M288 64c106 0 192 86 192 192S394 448 288 448c-65.2 0-122.9-32.5-157.6-82.3-10.1-14.5-30.1-18-44.6-7.9s-18 30.1-7.9 44.6C124.1 468.6 201 512 288 512 429.4 512 544 397.4 544 256S429.4 0 288 0C202.3 0 126.5 42.1 80 106.7L80 80c0-17.7-14.3-32-32-32S16 62.3 16 80l0 112c0 17.7 14.3 32 32 32l24.6 0c.5 0 1 0 1.5 0l86 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-38.3 0C154.9 102.6 217 64 288 64zm24 88c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 104c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65 0-94.1z"/>
+            </svg>
+          </button>
+          <button id="clearHistoryBtn" class="btn btn--pagination navigation__history__clear hidden">
+            <svg width="14" height="14" viewBox="0 0 448 512" fill="currentColor">
+              <path d="M136.7 5.9L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-8.7-26.1C306.9-7.2 294.7-16 280.9-16L167.1-16c-13.8 0-26 8.8-30.4 21.9zM416 144L32 144 53.1 467.1C54.7 492.4 75.7 512 101 512L347 512c25.3 0 46.3-19.6 47.9-44.9L416 144z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="cards">
+      <div class="cards__container" id="cardsContainer"></div>
+    </section>
+
+    <div class="movie-frame-container hidden">
+        <iframe class="movie-frame" id="filmFrame" allowfullscreen></iframe>
+    </div>
+
+    <div class="divider"></div>
+
+    <footer class="footer">
+      <div class="footer__container">
+        <h3 class="footer__title" id="footerTitle"></h3>
+        <p class="footer__text" id="footerText"></p>
+        <p class="footer__credit" id="footerCredit"></p>
+      </div>
+    </footer>
+  </div>
+
+  <template id="filmCardTemplate">
+    <div class="movie-card">
+      <img src="" alt="" class="movie-card__poster">
+      <div class="movie-card__content">
+        <div class="movie-card__header">
+          <div class="movie-card__meta">
+            <span class="movie-card__meta-item"></span>
+            <span class="movie-card__rating hidden"><span class="movie-card__rating-value"></span></span>
+          </div>
+          <div class="movie-card__title"></div>
+          <div class="movie-card__year hidden"></div>
+        </div>
+        <div class="movie-card__actions">
+          <button class="btn btn--secondary movie-card__similar-btn"></button>
+          <button class="btn btn--primary movie-card__watch-btn">
+            <svg width="12" height="12" viewBox="0 0 448 512" fill="currentColor">
+              <path d="M91.2 36.9c-12.4-6.8-27.4-6.5-39.6 .7S32 57.9 32 72v368c0 14.1 7.5 27.2 19.6 34.4s27.2 7.5 39.6 .7l336-184c12.8-7 20.8-20.5 20.8-35.1s-8-28.1-20.8-35.1l-336-184z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script type="module" src="js/filmoteka.constants.js"></script>
+  <script type="module" src="js/filmoteka.api.js"></script>
+  <script type="module" src="js/filmoteka.ui.js"></script>
+  <script type="module" src="js/filmoteka.core.js"></script>
+</body>
+</html>
