@@ -1,6 +1,7 @@
 import FilmotekaAPI from './filmoteka.api.js';
 import FilmotekaUI from './filmoteka.ui.js';
-import { TEXTS, USE_DEBUG_DATA, CONFIG, ROUTES } from './filmoteka.constants.js';
+import FilmotekaHeaderBanner from './filmoteka.header-banner.js';
+import { TEXTS, CONFIG, ROUTES } from './filmoteka.constants.js';
 
 class Filmoteka {
     constructor() {
@@ -9,15 +10,23 @@ class Filmoteka {
             onSimilarClick: (id, title) => this.showSimilarMovies(id, title),
             onWatchClick: (id, title, year) => this.watchMovie(id, title, year)
         });
+
+        this.headerBanner = new FilmotekaHeaderBanner();
         
         this.currentPage = 1;
+        this.featuredMovies = [];
+        this.maxPages = 1;
         this.history = this.loadHistory();
         this.isHistoryView = false;
         this.isWatching = false;
+        this.isLoadingAllMovies = false;
         
         this.ui.showPagination(true);
         this.bindEventHandlers();
         this.initRouter();
+
+        this.showInitialLoading();
+        this.loadAllMovies();
     }
 
     initRouter() {
@@ -31,12 +40,7 @@ class Filmoteka {
     handleRouteChange() {
         const path = window.location.hash || '#/';
         
-        // Сразу определяем где нужна пагинация, а где нет
-        if (path === '#/' || path === '') {
-            this.ui.showPagination(false);
-        } else {
-            this.ui.showPagination(false);
-        }
+        this.ui.showPagination(false);
         
         if (path.startsWith('#/search?')) {
             const urlParams = new URLSearchParams(path.split('?')[1]);
@@ -64,6 +68,7 @@ class Filmoteka {
         } else if (path === '#/history') {
             this.showHistoryFromRoute();
         } else {
+            this.ui.showPagination(true);
             this.showRecommendationsFromRoute();
         }
     }
@@ -120,7 +125,6 @@ class Filmoteka {
         }
     }
 
-    // НОВЫЙ МЕТОД: Загрузка похожих фильмов из маршрута
     async loadSimilarFromRoute(filmId) {
         this.ui.showPagination(false);
         
@@ -288,7 +292,42 @@ class Filmoteka {
         }
     }
 
+    showInitialLoading() {
+        this.isLoadingAllMovies = true;
+        this.resetViewState({ scrollToTop: false });
+        
+        this.ui.showNavigation(
+            TEXTS.NAV.RECOMMENDATIONS_TITLE,
+            TEXTS.NAV.RECOMMENDATIONS_SUBTITLE
+        );
+        this.ui.showHistoryButton(true);
+        this.ui.showPagination(false);
+        this.ui.showLoading();
+    }
+
+    async loadAllMovies() {
+        try {
+            this.featuredMovies = await this.api.getFeaturedMovies();
+            this.maxPages = Math.ceil(this.featuredMovies.length / CONFIG.PAGINATION.FILMS_PER_PAGE);
+            this.isLoadingAllMovies = false;
+            
+            if (this.featuredMovies.length > 0 && (window.location.hash === '#/' || window.location.hash === '')) {
+                this.loadRecommendations();
+            } else if (this.featuredMovies.length === 0) {
+                this.ui.showError(TEXTS.ERRORS.NOT_FOUND);
+            }
+        } catch (error) {
+            console.error('Error loading all movies:', error);
+            this.isLoadingAllMovies = false;
+            this.ui.showError(TEXTS.ERRORS.RECOMMENDATIONS_LOAD);
+        }
+    }
+
     async loadRecommendations() {
+        if (this.isLoadingAllMovies) {
+            return;
+        }
+        
         this.resetViewState({ scrollToTop: false });
         
         this.ui.showNavigation(
@@ -297,29 +336,29 @@ class Filmoteka {
         );
         this.ui.showHistoryButton(true);
         
-        // this.ui.showPagination(false);
-        
-        if (USE_DEBUG_DATA) {
-            const films = this.api.getDebugMovies('Рекомендации', 20, 200000);
-            this.ui.displayMovies(films, {
-                showPosition: true,
-                startPosition: (this.currentPage - 1) * CONFIG.PAGINATION.FILMS_PER_PAGE
-            });
-            this.ui.showPagination(true);
-            this.ui.updateProgressBar(this.currentPage);
+        if (this.featuredMovies.length === 0) {
+            this.ui.showLoading();
             return;
         }
         
-        this.ui.showLoading();
-        
         try {
-            const films = await this.api.getTopRatedMovies(this.currentPage);
+            const startIndex = (this.currentPage - 1) * CONFIG.PAGINATION.FILMS_PER_PAGE;
+            const endIndex = startIndex + CONFIG.PAGINATION.FILMS_PER_PAGE;
+            const films = this.featuredMovies.slice(startIndex, endIndex);
+            
+            if (!films || films.length === 0) {
+                this.ui.showError(TEXTS.ERRORS.NOT_FOUND);
+                return;
+            }
+            
             this.ui.displayMovies(films, {
                 showPosition: true,
-                startPosition: (this.currentPage - 1) * CONFIG.PAGINATION.FILMS_PER_PAGE
+                startPosition: startIndex + 1
             });
-            this.ui.updateProgressBar(this.currentPage);
+            
+            this.ui.updateProgressBar(this.currentPage, this.maxPages);
             this.ui.showPagination(true);
+            
         } catch (error) {
             this.ui.showError(TEXTS.ERRORS.RECOMMENDATIONS_LOAD);
         }
@@ -328,7 +367,6 @@ class Filmoteka {
     async showSimilarMovies(filmId, filmTitle) {
         this.resetViewState();
         
-        // ОБНОВЛЯЕМ URL для похожих фильмов
         const similarPath = `${ROUTES.SIMILAR}/${filmId}`;
         this.updateRoute(similarPath);
         
@@ -366,30 +404,21 @@ class Filmoteka {
     watchMovie(filmId, title, year) {
         this.ui.showPagination(false);
         
-        if (!USE_DEBUG_DATA) {
-            this.api.getMovieDetails(filmId).then(filmDetails => {
-                this.addToHistory(
-                    filmId, 
-                    title, 
-                    year,
-                    filmDetails.posterUrlPreview || filmDetails.posterUrl || '',
-                    filmDetails.ratingKinopoisk || filmDetails.ratingImdb || null,
-                    filmDetails.type || 'FILM'
-                );
-            }).catch(() => {
-                this.addToHistory(filmId, title, year);
-            });
-        } else {
+        this.api.getMovieDetails(filmId).then(filmDetails => {
+            this.addToHistory(
+                filmId, 
+                title, 
+                year,
+                filmDetails.posterUrlPreview || filmDetails.posterUrl || '',
+                filmDetails.ratingKinopoisk || filmDetails.ratingImdb || null,
+                filmDetails.type || 'FILM'
+            );
+        }).catch(() => {
             this.addToHistory(filmId, title, year);
-        }
+        });
 
         const moviePath = `${ROUTES.MOVIE}/${filmId}`;
         this.updateRoute(moviePath);
-
-        if (USE_DEBUG_DATA) {
-            alert('Тестовый режим');
-            return;
-        }
 
         this.isWatching = true;
         this.ui.scrollToTop();
@@ -410,8 +439,7 @@ class Filmoteka {
     }
 
     nextPage() {
-        const maxPages = Math.ceil(CONFIG.PAGINATION.TOTAL_FILMS / CONFIG.PAGINATION.FILMS_PER_PAGE);
-        if (this.currentPage < maxPages) {
+        if (this.currentPage < this.maxPages) {
             this.currentPage++;
             this.loadRecommendations();
         }

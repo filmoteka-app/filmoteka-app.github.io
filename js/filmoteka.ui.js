@@ -1,4 +1,4 @@
-import { TEXTS, USE_DEBUG_DATA, CONFIG, IFRAME_SRC } from './filmoteka.constants.js';
+import { TEXTS, CONFIG, IFRAME_SRC } from './filmoteka.constants.js';
 
 class FilmotekaUI {
     constructor(callbacks = {}) {
@@ -69,7 +69,6 @@ class FilmotekaUI {
         if (this.appSubtitle) this.appSubtitle.textContent = t.SUBTITLE;
         if (this.searchInput) this.searchInput.placeholder = t.PLACEHOLDER;
         
-        // Для кнопок с иконками добавляем текст рядом с SVG, а не заменяем содержимое
         if (this.searchBtn) {
             const existingText = this.searchBtn.querySelector('.btn-text');
             if (!existingText) {
@@ -143,6 +142,7 @@ class FilmotekaUI {
             ? TEXTS.META.SERIES
             : TEXTS.META.FILM;
         const rating = this.formatRating(film.rating || film.ratingKinopoisk || film.ratingImdb);
+        const position = film.position || options.position;
 
         const template = document.getElementById('filmCardTemplate').content.cloneNode(true);
         const img = template.querySelector('.movie-card__poster');
@@ -167,8 +167,7 @@ class FilmotekaUI {
 
         // Мета-информация
         if (meta) {
-            // meta.textContent = (options.showPosition ? `#${options.position} ` : '') + type;
-            meta.textContent = type;
+            meta.textContent = `${type} • #${position}`;
         }
 
         // Рейтинг
@@ -215,8 +214,12 @@ class FilmotekaUI {
     }
 
     showNavigation(title, subtitle, showBackButton = false) {
-        if (this.navigationTitle) this.navigationTitle.innerHTML = title;
-        if (this.navigationSubtitle) this.navigationSubtitle.textContent = subtitle;
+        if (this.navigationTitle) {
+            this.navigationTitle.textContent = typeof title === 'function' ? title() : title;
+        }
+        if (this.navigationSubtitle) {
+            this.navigationSubtitle.textContent = typeof subtitle === 'function' ? subtitle() : subtitle;
+        }
         this.setElementVisibility(this.backBtn, showBackButton);
     }
 
@@ -253,36 +256,36 @@ class FilmotekaUI {
         if (this.currentPageSpan) this.currentPageSpan.textContent = currentPage;
     }
 
-    updateProgressBar(currentPage) {
+    updateProgressBar(currentPage, maxPages) {
         if (!this.progressFill) return;
         
-        const totalPages = Math.ceil(CONFIG.PAGINATION.TOTAL_FILMS / CONFIG.PAGINATION.FILMS_PER_PAGE);
-        const progress = (currentPage / totalPages) * 100;
+        const progress = (currentPage / maxPages) * 100;
         
         this.progressFill.style.width = `${progress}%`;
     }
 
     showMovieFrame(filmId) {
-        if (!this.cardsContainer) return;
-
         if (!this.filmFrameContainer) {
-            this.filmFrameContainer = this.createElement('div', 'movie-frame-container');
-            this.filmFrame = this.createElement('iframe', 'movie-frame');
-            this.filmFrame.setAttribute('allowfullscreen', 'true');
-            this.filmFrameContainer.appendChild(this.filmFrame);
-            this.cardsContainer.parentNode.insertBefore(this.filmFrameContainer, this.cardsContainer.nextSibling);
+            this.filmFrameContainer = document.querySelector('.movie-frame-container');
+            this.filmFrame = document.querySelector('.movie-frame');
+            this.cardsSection = document.querySelector('.cards');
         }
 
-        // console.log('filmId:', filmId, 'type:', typeof filmId);
+        if (!this.filmFrameContainer || !this.filmFrame) {
+            console.error('Film frame elements not found');
+            return;
+        }
+
         this.filmFrame.src = IFRAME_SRC(filmId);
-        // console.log('Final URL:', this.filmFrame.src);
         this.setElementVisibility(this.filmFrameContainer, true);
-        this.setElementVisibility(this.cardsContainer, false);
+        this.setElementVisibility(this.cardsSection, false);
     }
 
     hideMovieFrame() {
-        this.setElementVisibility(this.filmFrameContainer, false);
-        this.setElementVisibility(this.cardsContainer, true);
+        if (this.filmFrameContainer) {
+            this.setElementVisibility(this.filmFrameContainer, false);
+        }
+        this.setElementVisibility(this.cardsSection, true);
         if (this.filmFrame) this.filmFrame.src = '';
     }
 

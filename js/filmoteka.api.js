@@ -1,4 +1,4 @@
-import { USE_DEBUG_DATA, API_KEYS, DEBUG_BASE, API_ENDPOINTS, TEXTS } from './filmoteka.constants.js';
+import { API_KEYS, API_ENDPOINTS, TEXTS, CONFIG } from './filmoteka.constants.js';
 
 class FilmotekaAPI {
     constructor() {
@@ -11,12 +11,18 @@ class FilmotekaAPI {
         for (let attempt = 0; attempt < API_KEYS.length; attempt++) {
             const key = API_KEYS[this.currentApiKeyIndex];
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
                 const response = await fetch(url, {
                     headers: {
                         'X-API-KEY': key,
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    signal: controller.signal
                 });
+
+                clearTimeout(timeoutId);
 
                 if (response.ok) {
                     if (usedReserve) {
@@ -30,6 +36,7 @@ class FilmotekaAPI {
                 this.switchApiKey();
                 continue;
             } catch (err) {
+                clearTimeout(timeoutId);
                 console.error(`Ошибка при использовании ключа ${key}:`, err);
                 usedReserve = true;
                 this.switchApiKey();
@@ -53,19 +60,7 @@ class FilmotekaAPI {
         return this.safeFetch(url);
     }
 
-    getDebugMovies(prefix, count, startId) {
-        return Array.from({ length: count }, (_, i) => ({
-            ...DEBUG_BASE,
-            kinopoiskId: startId + i,
-            nameRu: `${DEBUG_BASE.nameRu} — ${prefix} #${i + 1}`
-        }));
-    }
-
     async searchMovies(query) {
-        if (USE_DEBUG_DATA) {
-            return this.getDebugMovies('Поиск', 20, 100000);
-        }
-
         try {
             const res = await this.makeRequest(
                 API_ENDPOINTS.SEARCH,
@@ -78,28 +73,50 @@ class FilmotekaAPI {
         }
     }
 
-    async getTopRatedMovies(page = 1) {
-        if (USE_DEBUG_DATA) {
-            return this.getDebugMovies('Рекомендации', 20, 200000);
-        }
-
+    async getFeaturedMovies() {
         try {
-            const res = await this.makeRequest(
-                API_ENDPOINTS.TOP,
-                `?type=TOP_250_BEST_FILMS&page=${page}`
-            );
-            const data = await res.json();
-            return data.films;
+            const allFilms = [];
+            let page = 1;
+            let hasMorePages = true;
+
+            while (hasMorePages && page <= 13) {
+                const res = await this.makeRequest(
+                    API_ENDPOINTS.TOP,
+                    `?type=TOP_250_BEST_FILMS&page=${page}`
+                );
+                const data = await res.json();
+                
+                if (!data.films || data.films.length === 0) {
+                    hasMorePages = false;
+                    break;
+                }
+
+                const filmsWithPosition = data.films.map((film, index) => ({
+                    ...film,
+                    position: ((page - 1) * 20) + index + 1
+                }));
+
+                allFilms.push(...filmsWithPosition);
+                
+                if (data.films.length < 20) {
+                    hasMorePages = false;
+                }
+                
+                page++;
+                
+                if (hasMorePages) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
+
+            return allFilms;
+            
         } catch (error) {
-            this.handleApiError(error, 'TOP_FILMS');
+            this.handleApiError(error, 'ALL_TOP_FILMS');
         }
     }
 
     async getSimilarMovies(filmId) {
-        if (USE_DEBUG_DATA) {
-            return this.getDebugMovies('Похожие', 20, 300000);
-        }
-
         try {
             const res = await this.makeRequest(API_ENDPOINTS.SIMILAR, filmId);
             const data = await res.json();
@@ -110,14 +127,6 @@ class FilmotekaAPI {
     }
 
     async getMovieDetails(filmId) {
-        if (USE_DEBUG_DATA) {
-            return {
-                ...DEBUG_BASE,
-                kinopoiskId: filmId,
-                nameRu: `${DEBUG_BASE.nameRu} — Детали #${filmId}`
-            };
-        }
-
         try {
             const res = await this.makeRequest(API_ENDPOINTS.DETAILS, filmId);
             return await res.json();
