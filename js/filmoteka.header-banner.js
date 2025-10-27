@@ -90,7 +90,7 @@ class FilmotekaHeaderBanner {
         posterRow.style.flexDirection = 'row';
         posterRow.style.alignItems = 'center';
         posterRow.style.justifyContent = 'center';
-        posterRow.style.gap = '0';
+        posterRow.style.gap = '70px';
         posterRow.style.width = '100%';
         posterRow.style.height = '100%';
         posterRow.style.position = 'absolute';
@@ -106,6 +106,7 @@ class FilmotekaHeaderBanner {
             posterItem.style.flexShrink = '0';
             posterItem.style.height = '100%';
             posterItem.style.position = 'relative';
+            posterItem.style.margin = '0 0px';
             
             const img = document.createElement('img');
             img.src = posterUrl;
@@ -116,7 +117,7 @@ class FilmotekaHeaderBanner {
             img.style.display = 'block';
             img.style.objectFit = 'contain';
             
-            posterItem.style.transform = 'rotate(10deg) scale(1.2)';
+            posterItem.style.transform = 'rotate(20deg) scale(1.3)';
             posterItem.style.transformOrigin = 'center';
             
             posterItem.appendChild(img);
