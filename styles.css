@@ -422,10 +422,12 @@ body {
 .movie-frame-container {
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    width: 100%;
-    max-width: var(--container-width);
+    max-width: calc(var(--container-width) - 30px); /* Учитываем padding */
     margin: 15px auto;
+    padding: 0;
     aspect-ratio: 16/10;
+    width: calc(100% - 30px);
+    box-sizing: border-box;
 }
 
 .movie-frame {
